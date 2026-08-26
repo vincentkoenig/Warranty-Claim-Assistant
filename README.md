@@ -129,15 +129,6 @@ python app.py
 http://127.0.0.1:5000
 ```
 
-## Was fehlt bewusst
-
-- **Bauteil-Abgleich per exaktem String-Vergleich:** Die Prüfung gegen die Ausschlussliste einer `WarrantyRule` matcht aktuell exakt. Formuliert das LLM ein Bauteil anders als in der Liste hinterlegt (z.B. "Bremsen" statt "Bremsbeläge"), greift der Ausschluss nicht. Bekannte Grenze, nächster Schritt wäre eine kontrollierte Werteliste im Extraction-Schema oder ein toleranteres Matching.
-- **Kein Foto-/PDF-Input:** Nur Freitext wird verarbeitet. Bild-basierte Reklamationen (z.B. Fotos vom Schaden) sind nicht angebunden.
-- **Keine Bestätigungs-/Korrekturschicht:** Der Mitarbeiter sieht die extrahierten Daten, kann sie aber vor der Regelprüfung nicht editieren.
-- **Keine Nutzerauthentifizierung / Multi-User-Unterstützung.**
-- **Keine automatisierte Test-Suite:** Testfälle wurden manuell durchgespielt, keine Unit-/Integrationstests.
-- **Kein Cloud-Deployment:** Lokale Demo, für dieses MVP ausreichend.
-
 ## Datenschutz
 
 Alle Fahrzeug-, Kunden- und Reklamationsdaten in diesem Projekt sind fiktiv. In einem echten Einsatz wären zusätzlich erforderlich: Zugriffskontrolle je nach Mitarbeiterrolle, ein Auftragsverarbeitungsvertrag mit dem LLM-Anbieter (oder der Einsatz eines lokal gehosteten Modells), sowie eine Prüfung, welche Kundendaten überhaupt an ein externes LLM übermittelt werden dürfen.
