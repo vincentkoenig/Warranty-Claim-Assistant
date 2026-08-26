@@ -1,10 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Übersicht Reklamationen — Warranty Claim Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <nav>
+        <a href="{{ url_for('index') }}">Neue Reklamation</a>
+        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+    </nav>
 
+    <main>
+        <h1>Übersicht Reklamationen</h1>
+
+        {% if complaints %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fahrzeug</th>
+                    <th>Status</th>
+                    <th>Ergebnis</th>
+                    <th>Eingereicht am</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                <tr>
+                    <td>{{ complaint.id }}</td>
+                    <td>{{ complaint.vehicle.brand }} {{ complaint.vehicle.model }}</td>
+                    <td>{{ complaint.status }}</td>
+                    <td>
+                        {% if complaint.decision %}
+                            {{ complaint.decision.rule_result }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ complaint.submitted_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td><a href="{{ url_for('view_complaint', complaint_id=complaint.id) }}">Details</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Noch keine Reklamationen vorhanden.</p>
+        {% endif %}
+    </main>
 </body>
 </html>

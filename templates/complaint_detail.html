@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Reklamation #{{ complaint.id }} — Warranty Claim Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Neue Reklamation</a>
+        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+    </nav>
+
+    <main>
+        <h1>Reklamation #{{ complaint.id }}</h1>
+
+        <section>
+            <h2>Fahrzeug</h2>
+            <p>{{ complaint.vehicle.brand }} {{ complaint.vehicle.model }} — {{ complaint.vehicle.vin }}</p>
+            <p>Erstzulassung: {{ complaint.vehicle.first_registration.strftime('%d.%m.%Y') }}</p>
+        </section>
+
+        <section>
+            <h2>Reklamationstext (Original)</h2>
+            <p>{{ complaint.raw_text }}</p>
+        </section>
+
+        {% if complaint.extraction %}
+        <section>
+            <h2>Extrahierte Daten</h2>
+            <ul>
+                <li>Bauteil: {{ complaint.extraction.reported_component }}</li>
+                <li>Fehlerbeschreibung: {{ complaint.extraction.reported_issue }}</li>
+                <li>Gemeldeter Kilometerstand: {{ complaint.extraction.reported_mileage_km }} km</li>
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if complaint.decision %}
+        <section>
+            <h2>Regelprüfung</h2>
+            <p><strong>Ergebnis:</strong> {{ complaint.decision.rule_result }}</p>
+            <p><strong>Begründung:</strong> {{ complaint.decision.rule_reason }}</p>
+        </section>
+
+        <section>
+            <h2>Empfehlung für Mitarbeiter</h2>
+            <p>{{ complaint.decision.llm_recommendation }}</p>
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Warranty Claim Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <nav>
+        <a href="{{ url_for('index') }}">Neue Reklamation</a>
+        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+    </nav>
 
+    <main>
+        <h1>Neue Reklamation einreichen</h1>
+
+        <form method="POST" action="{{ url_for('submit_complaint') }}">
+            <label for="vehicle_id">Fahrzeug</label>
+            <select name="vehicle_id" id="vehicle_id" required>
+                <option value="" disabled selected>Bitte wählen...</option>
+                {% for vehicle in vehicles %}
+                <option value="{{ vehicle.id }}">
+                    {{ vehicle.brand }} {{ vehicle.model }} — {{ vehicle.vin }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="complaint_text">Reklamationstext</label>
+            <textarea name="complaint_text" id="complaint_text" rows="6" required
+                placeholder="Beschreibung der Kundenreklamation, z.B. 'Fahrzeug macht komische Geräusche beim Kaltstart, Kilometerstand ca. 45.000 km...'"></textarea>
+
+            <button type="submit">Reklamation prüfen</button>
+        </form>
+    </main>
 </body>
 </html>
