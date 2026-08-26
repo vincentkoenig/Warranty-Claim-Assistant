@@ -2,50 +2,83 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reklamation #{{ complaint.id }} — Warranty Claim Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">Neue Reklamation</a>
-        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        <span class="nav-brand">Warranty Claim Assistant</span>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Neue Reklamation</a>
+            <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        </div>
     </nav>
 
     <main>
-        <h1>Reklamation #{{ complaint.id }}</h1>
+        <div class="detail-header">
+            <div>
+                <p class="eyebrow">Reklamation #{{ complaint.id }}</p>
+                <h1>{{ complaint.vehicle.brand }} {{ complaint.vehicle.model }}</h1>
+            </div>
+            {% if complaint.decision %}
+            <span class="stamp stamp--{{ complaint.decision.rule_result }}">
+                {{ complaint.decision.rule_result.replace('_', ' ') }}
+            </span>
+            {% endif %}
+        </div>
+
+        {% if complaint.extraction %}
+        <div class="stat-row">
+            <div class="stat-block">
+                <div class="stat-label">Bauteil</div>
+                <div class="stat-value">{{ complaint.extraction.reported_component }}</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">Kilometerstand</div>
+                <div class="stat-value">{{ complaint.extraction.reported_mileage_km }} km</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">Erstzulassung</div>
+                <div class="stat-value">{{ complaint.vehicle.first_registration.strftime('%d.%m.%Y') }}</div>
+            </div>
+        </div>
+        {% endif %}
 
         <section>
             <h2>Fahrzeug</h2>
-            <p>{{ complaint.vehicle.brand }} {{ complaint.vehicle.model }} — {{ complaint.vehicle.vin }}</p>
-            <p>Erstzulassung: {{ complaint.vehicle.first_registration.strftime('%d.%m.%Y') }}</p>
+            <ul class="data-list">
+                <li><span>VIN</span><span>{{ complaint.vehicle.vin }}</span></li>
+                <li><span>Marke</span><span>{{ complaint.vehicle.brand }}</span></li>
+                <li><span>Modell</span><span>{{ complaint.vehicle.model }}</span></li>
+            </ul>
         </section>
 
         <section>
             <h2>Reklamationstext (Original)</h2>
-            <p>{{ complaint.raw_text }}</p>
+            <p class="quote">{{ complaint.raw_text }}</p>
         </section>
 
         {% if complaint.extraction %}
         <section>
             <h2>Extrahierte Daten</h2>
-            <ul>
-                <li>Bauteil: {{ complaint.extraction.reported_component }}</li>
-                <li>Fehlerbeschreibung: {{ complaint.extraction.reported_issue }}</li>
-                <li>Gemeldeter Kilometerstand: {{ complaint.extraction.reported_mileage_km }} km</li>
-            </ul>
+            <p style="color: var(--color-ink-muted); font-size: 0.9rem; margin-top: -0.3rem;">
+                {{ complaint.extraction.reported_issue }}
+            </p>
         </section>
         {% endif %}
 
         {% if complaint.decision %}
         <section>
             <h2>Regelprüfung</h2>
-            <p><strong>Ergebnis:</strong> {{ complaint.decision.rule_result }}</p>
-            <p><strong>Begründung:</strong> {{ complaint.decision.rule_reason }}</p>
+            <p class="quote">{{ complaint.decision.rule_reason }}</p>
         </section>
 
         <section>
             <h2>Empfehlung für Mitarbeiter</h2>
-            <p>{{ complaint.decision.llm_recommendation }}</p>
+            <div class="callout">{{ complaint.decision.llm_recommendation }}</div>
         </section>
         {% endif %}
     </main>

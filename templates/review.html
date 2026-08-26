@@ -2,17 +2,25 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Übersicht Reklamationen — Warranty Claim Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Übersicht — Warranty Claim Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">Neue Reklamation</a>
-        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        <span class="nav-brand">Warranty Claim Assistant</span>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Neue Reklamation</a>
+            <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        </div>
     </nav>
 
     <main>
-        <h1>Übersicht Reklamationen</h1>
+        <p class="eyebrow">Übersicht</p>
+        <h1>Reklamationen</h1>
+        <p class="subtitle">Alle eingereichten Reklamationen mit Prüfergebnis.</p>
 
         {% if complaints %}
         <table>
@@ -29,14 +37,16 @@
             <tbody>
                 {% for complaint in complaints %}
                 <tr>
-                    <td>{{ complaint.id }}</td>
+                    <td>#{{ complaint.id }}</td>
                     <td>{{ complaint.vehicle.brand }} {{ complaint.vehicle.model }}</td>
                     <td>{{ complaint.status }}</td>
                     <td>
                         {% if complaint.decision %}
-                            {{ complaint.decision.rule_result }}
+                        <span class="stamp stamp--{{ complaint.decision.rule_result }} stamp--small">
+                            {{ complaint.decision.rule_result.replace('_', ' ') }}
+                        </span>
                         {% else %}
-                            —
+                        —
                         {% endif %}
                     </td>
                     <td>{{ complaint.submitted_at.strftime('%d.%m.%Y %H:%M') }}</td>
@@ -46,7 +56,10 @@
             </tbody>
         </table>
         {% else %}
-        <p>Noch keine Reklamationen vorhanden.</p>
+        <div class="empty-state">
+            <p>Noch keine Reklamationen erfasst.</p>
+            <a href="{{ url_for('index') }}">Neue Reklamation einreichen →</a>
+        </div>
         {% endif %}
     </main>
 </body>

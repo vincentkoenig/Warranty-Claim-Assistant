@@ -2,35 +2,78 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Warranty Claim Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neue Reklamation — Warranty Claim Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">Neue Reklamation</a>
-        <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        <span class="nav-brand">Warranty Claim Assistant</span>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Neue Reklamation</a>
+            <a href="{{ url_for('list_complaints') }}">Übersicht</a>
+        </div>
     </nav>
 
     <main>
-        <h1>Neue Reklamation einreichen</h1>
+        <p class="eyebrow">Neue Meldung</p>
+        <h1>Reklamation einreichen</h1>
+        <p class="subtitle">Reklamationstext einfügen — Bauteil, Fehlerbild und Kilometerstand werden automatisch erkannt und gegen die Garantiebedingungen geprüft.</p>
 
-        <form method="POST" action="{{ url_for('submit_complaint') }}">
-            <label for="vehicle_id">Fahrzeug</label>
-            <select name="vehicle_id" id="vehicle_id" required>
-                <option value="" disabled selected>Bitte wählen...</option>
-                {% for vehicle in vehicles %}
-                <option value="{{ vehicle.id }}">
-                    {{ vehicle.brand }} {{ vehicle.model }} — {{ vehicle.vin }}
-                </option>
-                {% endfor %}
-            </select>
+        <div class="panel">
+            <form method="POST" action="{{ url_for('submit_complaint') }}">
+                <div>
+                    <label for="vehicle_id">Fahrzeug</label>
+                    <select name="vehicle_id" id="vehicle_id" required>
+                        <option value="" disabled selected>Bitte wählen...</option>
+                        {% for vehicle in vehicles %}
+                        <option
+                            value="{{ vehicle.id }}"
+                            data-brand="{{ vehicle.brand }}"
+                            data-model="{{ vehicle.model }}"
+                            data-vin="{{ vehicle.vin }}"
+                            data-reg="{{ vehicle.first_registration.strftime('%d.%m.%Y') }}"
+                        >
+                            {{ vehicle.brand }} {{ vehicle.model }} — {{ vehicle.vin }}
+                        </option>
+                        {% endfor %}
+                    </select>
 
-            <label for="complaint_text">Reklamationstext</label>
-            <textarea name="complaint_text" id="complaint_text" rows="6" required
-                placeholder="Beschreibung der Kundenreklamation, z.B. 'Fahrzeug macht komische Geräusche beim Kaltstart, Kilometerstand ca. 45.000 km...'"></textarea>
+                    <div id="vehicle-preview" hidden>
+                        <div>Marke/Modell: <span data-field="brand-model"></span></div>
+                        <div>VIN: <span data-field="vin"></span></div>
+                        <div>Erstzulassung: <span data-field="reg"></span></div>
+                    </div>
+                </div>
 
-            <button type="submit">Reklamation prüfen</button>
-        </form>
+                <div>
+                    <label for="complaint_text">Reklamationstext</label>
+                    <textarea name="complaint_text" id="complaint_text" rows="6" required
+                        placeholder="z.B. 'Fahrzeug macht komische Geräusche beim Kaltstart, Kilometerstand ca. 45.000 km...'"></textarea>
+                </div>
+
+                <button type="submit">Prüfung starten</button>
+            </form>
+        </div>
     </main>
+
+    <script>
+        const vehicleSelect = document.getElementById('vehicle_id');
+        const preview = document.getElementById('vehicle-preview');
+
+        vehicleSelect.addEventListener('change', function () {
+            const opt = vehicleSelect.options[vehicleSelect.selectedIndex];
+            if (!opt.value) {
+                preview.hidden = true;
+                return;
+            }
+            preview.hidden = false;
+            preview.querySelector('[data-field="brand-model"]').textContent = `${opt.dataset.brand} ${opt.dataset.model}`;
+            preview.querySelector('[data-field="vin"]').textContent = opt.dataset.vin;
+            preview.querySelector('[data-field="reg"]').textContent = opt.dataset.reg;
+        });
+    </script>
 </body>
 </html>
